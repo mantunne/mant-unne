@@ -7,14 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        :root { --fiunne-orange: #f06423; --fiunne-gray: #374151; }
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; touch-action: manipulation; }
+        :root { --fiunne-orange: #f06423; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
         .loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); display: none; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: white; }
         .tab-active { border-bottom: 4px solid var(--fiunne-orange); color: var(--fiunne-orange); font-weight: 900; background: #fff7ed; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .btn-primary { background: var(--fiunne-orange); color: white; font-weight: 900; padding: 16px; border-radius: 12px; width: 100%; text-transform: uppercase; }
         input, select, textarea { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 12px !important; width: 100%; margin-bottom: 12px; font-size: 16px; }
         label { font-weight: 700; font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .btn-primary { background: var(--fiunne-orange); color: white; font-weight: 900; padding: 16px; border-radius: 12px; width: 100%; text-transform: uppercase; }
         .hidden { display: none; }
     </style>
 </head>
@@ -22,52 +21,46 @@
 
     <div id="loading" class="loading-overlay">
         <div class="w-10 h-10 border-4 border-white border-t-orange-500 rounded-full animate-spin mb-4"></div>
-        <p class="text-xs font-bold uppercase tracking-widest">Sincronizando...</p>
+        <p class="text-[10px] font-black uppercase tracking-widest">Sincronizando...</p>
     </div>
 
     <div id="login-screen" class="fixed inset-0 bg-white z-[5000] flex flex-col items-center justify-center p-8">
         <img src="https://ingenieria.unne.edu.ar/assets/img/logo-fi-horizontal.png" class="w-64 mb-8">
-        <h1 class="text-2xl font-black mb-6 text-slate-800 uppercase tracking-tighter">SGM FIUNNE 2026</h1>
+        <h1 class="text-xl font-black mb-6 text-slate-800 uppercase tracking-tighter">SGM FIUNNE v4.1</h1>
         <input type="password" id="pin" placeholder="PIN" class="text-center text-3xl font-black !border-2">
-        <button onclick="checkPin()" class="btn-primary w-full max-w-xs mt-2">Ingresar</button>
+        <button onclick="checkPin()" class="btn-primary mt-2">Entrar</button>
     </div>
 
     <header class="bg-white shadow-sm p-4 sticky top-0 z-50 flex justify-between items-center border-b">
-        <div>
-            <h1 class="text-xl font-black text-slate-900 leading-none">SGM PRO</h1>
-            <p class="text-[10px] text-orange-600 font-black uppercase mt-1">Gestión de Mantenimiento</p>
-        </div>
+        <h1 class="text-xl font-black text-slate-900 leading-none">SGM PRO 2026</h1>
+        <span class="text-[9px] font-black bg-slate-100 px-2 py-1 rounded">FIUNNE</span>
     </header>
 
-    <nav class="flex bg-white sticky top-[61px] z-40 overflow-x-auto no-scrollbar shadow-sm border-b">
+    <nav class="flex bg-white sticky top-[61px] z-40 shadow-sm border-b overflow-x-auto">
         <button onclick="showT('nueva')" id="t-nueva" class="flex-1 py-4 px-4 text-[10px] font-bold uppercase tab-active">Nueva OT</button>
         <button onclick="showT('cierre')" id="t-cierre" class="flex-1 py-4 px-4 text-[10px] font-bold uppercase">Cierre</button>
-        <button onclick="showT('relev')" id="t-relev" class="flex-1 py-4 px-4 text-[10px] font-bold uppercase">Relevamiento</button>
+        <button onclick="showT('relev')" id="t-relev" class="flex-1 py-4 px-4 text-[10px] font-bold uppercase">Relevo</button>
         <button onclick="showT('historial')" id="t-historial" class="flex-1 py-4 px-4 text-[10px] font-bold uppercase">Historial</button>
     </nav>
 
     <main class="p-4 max-w-lg mx-auto">
-        <section id="s-nueva">
+        <section id="s-nueva" class="space-y-4">
             <div class="bg-white p-6 rounded-2xl shadow-sm border">
                 <label>Tipo</label>
                 <select id="ot-tipo"><option>Correctivo</option><option>Preventivo</option></select>
                 <label>Especialidad</label>
-                <select id="ot-esp">
-                    <option>Electrico</option><option>Refrigeracion</option><option>Herreria</option><option>Plomeria</option><option>Albañileria</option>
-                </select>
+                <select id="ot-esp"><option>Electrico</option><option>Refrigeracion</option><option>Herreria</option><option>Plomeria</option></select>
                 <label>Edificio</label>
-                <select id="ot-edif" onchange="loadData('ot-edif','ot-sec','ot-ubi')"><option value="">Cargando...</option></select>
+                <select id="ot-edif" onchange="loadCascada('ot-edif','ot-sec','ot-ubi')"><option value="">Cargando...</option></select>
                 <label>Sector</label>
                 <select id="ot-sec" disabled onchange="filterUbi('ot-sec','ot-ubi')"><option value="">Sector...</option></select>
                 <label>Ubicación</label>
                 <select id="ot-ubi" disabled><option value="">Ubi...</option></select>
                 <label>Reportado por</label>
                 <input type="text" id="ot-repo">
-                <label>Personal</label>
-                <input type="text" id="ot-pers">
                 <label>Descripción</label>
-                <textarea id="ot-desc" rows="3"></textarea>
-                <button onclick="enviarOT()" class="btn-primary w-full mt-2">Generar Orden</button>
+                <textarea id="ot-desc" rows="2"></textarea>
+                <button onclick="enviarOT()" class="btn-primary mt-2">Crear OT</button>
             </div>
         </section>
 
@@ -75,32 +68,21 @@
             <div class="bg-white p-6 rounded-2xl shadow-sm border">
                 <label>OT Abierta</label>
                 <select id="c-id-ot"><option value="">Cargando...</option></select>
-                <label>Materiales</label>
-                <textarea id="c-mat" rows="3"></textarea>
                 <label>Resolución</label>
                 <textarea id="c-com" rows="3"></textarea>
-                <button onclick="cerrarOT()" class="btn-primary w-full">Finalizar</button>
+                <button onclick="cerrarOT()" class="btn-primary mt-2">Cerrar</button>
             </div>
         </section>
 
         <section id="s-relev" class="hidden">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border">
-                <label>Edificio</label>
-                <select id="r-edif" onchange="loadData('r-edif','r-sec','r-ubi')"><option value="">Cargando...</option></select>
-                <label>Sector</label>
-                <select id="r-sec" disabled onchange="filterUbi('r-sec','r-ubi')"><option value="">Sector...</option></select>
-                <label>Ubicación</label>
-                <select id="r-ubi" disabled onchange="fillRelev()"><option value="">Ubi...</option></select>
-                <div id="form-r" class="hidden mt-4 pt-4 border-t border-dashed">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label>Inv. Aire</label><input type="text" id="ri-aire"></div>
-                        <div><label>Mod. Aire</label><input type="text" id="re-aire"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label>Tipo Lum.</label><input type="text" id="rt-lum"></div>
-                        <div><label>Cant. Lum.</label><input type="number" id="rc-lam"></div>
-                    </div>
-                    <button onclick="saveRelev()" class="btn-primary w-full mt-2">Actualizar</button>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border text-center">
+                <p class="text-xs font-bold text-slate-400">Seleccione edificio para iniciar relevamiento</p>
+                <select id="r-edif" class="mt-4" onchange="loadCascada('r-edif','r-sec','r-ubi')"><option value="">Edificio...</option></select>
+                <select id="r-sec" disabled class="mt-2" onchange="filterUbi('r-sec','r-ubi')"><option value="">Sector...</option></select>
+                <select id="r-ubi" disabled class="mt-2" onchange="fillRelev()"><option value="">Ubi...</option></select>
+                <div id="form-r" class="hidden text-left mt-4 border-t pt-4">
+                   <label>N° Inv Aire</label><input type="text" id="ri-aire">
+                   <button onclick="saveRelev()" class="btn-primary">Guardar</button>
                 </div>
             </div>
         </section>
@@ -109,7 +91,7 @@
     </main>
 
     <script>
-        const URL = "https://script.google.com/macros/s/AKfycbzQpsaNlrPfnBLooCXoTATp3uZ9_LQWeM4yjDuCF7F5TxpsErnXrk1qvdt_czZG3Oh7nw/exec";
+        const URL = "https://script.google.com/macros/s/AKfycbwICmeewkY60-eT5_vJuFZPP4zoJZmQ10naiGG6vwn6jgnS_fh33L3GCOrbrJ724-3grQ/exec";
         const PIN_CORRECTO = "4370";
         let dbFull = [];
         let currentRow = null;
@@ -120,7 +102,7 @@
             if(document.getElementById('pin').value === PIN_CORRECTO) {
                 document.getElementById('login-screen').classList.add('hidden');
                 init();
-            } else { alert("PIN Incorrecto"); }
+            } else { alert("Error"); }
         }
 
         async function init() {
@@ -137,15 +119,17 @@
             showL(false);
         }
 
-        async function loadData(eI, sI, uI) {
+        async function loadCascada(eI, sI, uI) {
             const ed = document.getElementById(eI).value;
             if(!ed) return;
             showL(true);
-            dbFull = await fetch(`${URL}?action=getSectores&edificio=${encodeURIComponent(ed)}&token=${PIN_CORRECTO}`).then(r=>r.json());
-            const secs = [...new Set(dbFull.map(x=>x.sector))].filter(s=>s);
-            document.getElementById(sI).innerHTML = '<option value="">Sector...</option>' + secs.map(s=>`<option value="${s}">${s}</option>`).join("");
-            document.getElementById(sI).disabled = false;
-            document.getElementById(uI).disabled = true;
+            try {
+                dbFull = await fetch(`${URL}?action=getSectores&edificio=${encodeURIComponent(ed)}&token=${PIN_CORRECTO}`).then(r=>r.json());
+                const secs = [...new Set(dbFull.map(x=>x.sector))].filter(s=>s);
+                document.getElementById(sI).innerHTML = '<option value="">Sector...</option>' + secs.map(s=>`<option value="${s}">${s}</option>`).join("");
+                document.getElementById(sI).disabled = false;
+                document.getElementById(uI).disabled = true;
+            } catch(e) { console.error(e); }
             showL(false);
         }
 
@@ -160,27 +144,26 @@
             const d = JSON.parse(document.getElementById('r-ubi').value);
             currentRow = d.fila;
             document.getElementById('ri-aire').value = d.inv_aire||"";
-            document.getElementById('re-aire').value = d.eq_aire||"";
-            document.getElementById('rt-lum').value = d.t_lum||"";
-            document.getElementById('rc-lam').value = d.c_lam||"";
             document.getElementById('form-r').classList.remove('hidden');
         }
 
         async function enviarOT() {
+            const ubiSel = document.getElementById('ot-ubi').value;
+            if(!ubiSel) return alert("Falta ubicación");
             showL(true);
             const data = {
                 action:'nuevaOT', 
-                tipo:document.getElementById('ot-tipo').value,
-                especialidad:document.getElementById('ot-esp').value,
                 edificio:document.getElementById('ot-edif').value,
                 sector:document.getElementById('ot-sec').value,
-                ubicacion:JSON.parse(document.getElementById('ot-ubi').value).ubi,
+                ubicacion:JSON.parse(ubiSel).ubi,
+                tipo:document.getElementById('ot-tipo').value,
+                especialidad:document.getElementById('ot-esp').value,
                 reportadoPor:document.getElementById('ot-repo').value,
-                personal:document.getElementById('ot-pers').value,
-                descripcion:document.getElementById('ot-desc').value
+                descripcion:document.getElementById('ot-desc').value,
+                personal: ""
             };
             const res = await fetch(URL, {method:'POST', body:JSON.stringify(data)}).then(r=>r.text());
-            showL(false); alert(res==="Ok"?"OT Creada":"Error"); if(res==="Ok") location.reload();
+            showL(false); alert(res); if(res==="Ok") location.reload();
         }
 
         async function cerrarOT() {
@@ -188,26 +171,11 @@
             const data = {
                 action:'cerrarOT', 
                 idOT:document.getElementById('c-id-ot').value,
-                materialesUsados:document.getElementById('c-mat').value,
-                comentarioFinal:document.getElementById('c-com').value
+                comentarioFinal:document.getElementById('c-com').value,
+                materialesUsados: ""
             };
             const res = await fetch(URL, {method:'POST', body:JSON.stringify(data)}).then(r=>r.text());
-            showL(false); alert(res==="Ok"?"OT Cerrada":"Error"); if(res==="Ok") location.reload();
-        }
-
-        async function saveRelev() {
-            showL(true);
-            const data = {
-                action:'updateRelevamiento',
-                edificio:document.getElementById('r-edif').value,
-                fila:currentRow,
-                inv_aire:document.getElementById('ri-aire').value,
-                eq_aire:document.getElementById('re-aire').value,
-                t_lum:document.getElementById('rt-lum').value,
-                c_lam:document.getElementById('rc-lam').value
-            };
-            const res = await fetch(URL, {method:'POST', body:JSON.stringify(data)}).then(r=>r.text());
-            showL(false); alert(res==="Ok"?"Actualizado":"Error");
+            showL(false); alert(res); if(res==="Ok") location.reload();
         }
 
         function showT(t) {
@@ -221,12 +189,14 @@
         }
 
         async function loadH() {
+            const container = document.getElementById('s-historial');
+            container.innerHTML = "Cargando...";
             const h = await fetch(`${URL}?action=getHistorial&token=${PIN_CORRECTO}`).then(r=>r.json());
-            document.getElementById('s-historial').innerHTML = h.map(r=>`
+            container.innerHTML = h.map(r=>`
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-l-4 ${r.est==='Abierta'?'border-l-orange-500':'border-l-green-500'}">
                     <p class="text-[10px] font-black uppercase text-slate-400">ID: ${r.id} | ${r.est}</p>
                     <p class="text-sm font-bold">${r.tarea}</p>
-                    <p class="text-[10px] text-slate-500 uppercase">${r.edif} | ${r.tec} | ${r.fecha}</p>
+                    <p class="text-[10px] text-slate-500 uppercase">${r.edif} | ${r.fecha}</p>
                 </div>
             `).join("");
         }
